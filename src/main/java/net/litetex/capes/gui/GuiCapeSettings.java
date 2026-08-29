@@ -13,6 +13,9 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.texture.ITextureObject;
+import net.minecraft.client.renderer.texture.ITickableTextureObject;
 import net.minecraft.client.entity.AbstractClientPlayer;
 
 import java.awt.Desktop;
@@ -54,6 +57,7 @@ public class GuiCapeSettings extends GuiScreen {
     private float   previewYaw = 180.0F;
     private boolean dragging   = false;
     private int     lastDragX;
+    private long lastCapeTickTime = 0L;
 
     public GuiCapeSettings(GuiScreen parentScreen) {
         this(parentScreen, Tab.PREVIEW);
@@ -375,7 +379,7 @@ public class GuiCapeSettings extends GuiScreen {
                 width / 2, height / 2, 0xAAAAAA);
             return;
         }
-
+        tickPreviewCapeAnimation(this.mc.thePlayer);
         int renderX = width / 2;
         int renderY = Math.min(height - 76, height / 2 + 78);
         int scale   = Math.max(36, Math.min(62, height / 5));
@@ -494,6 +498,23 @@ public class GuiCapeSettings extends GuiScreen {
         OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
         GlStateManager.disableTexture2D();
         OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
+    }
+    
+    private void tickPreviewCapeAnimation(AbstractClientPlayer player) {
+        CapeProviderManager mgr = CapeProviderManager.getInstance();
+        if (mgr == null) return;
+
+        ResourceLocation capeLoc = mgr.getCapeTexture(player);
+        if (capeLoc == null) return;
+
+        ITextureObject tex = Minecraft.getMinecraft().getTextureManager().getTexture(capeLoc);
+        if (!(tex instanceof ITickableTextureObject)) return;
+
+        long now = System.currentTimeMillis();
+        if (now - lastCapeTickTime < 50L) return;
+        lastCapeTickTime = now;
+
+        ((ITickableTextureObject) tex).tick();
     }
 
 
