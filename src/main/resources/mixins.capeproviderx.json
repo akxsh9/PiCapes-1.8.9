@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "net.litetex.capes.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "mixins.capeproviderx.refmap.json",
+  "mixins": [],
+  "client": [
+    "MixinAbstractClientPlayer",
+    "MixinLayerCape",
+    "MixinGuiCustomizeSkin",
+	"MixinRenderPlayer"
+  ],
+  "server": [],
+  "minVersion": "0.7"
+}

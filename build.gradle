@@ -1,0 +1,85 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { name = "forge"; url = "http://files.minecraftforge.net/maven" }
+        maven { name = "sponge"; url = "https://repo.spongepowered.org/maven" }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'org.spongepowered.mixin'
+
+version = "1.8.9"
+group = "net.litetex.capes"
+archivesBaseName = "cape-provider-x"
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+minecraft {
+    version = "1.8.9-11.15.1.2318-1.8.9"
+    runDir = "run"
+    mappings = "stable_20"
+}
+
+repositories {
+    maven { name = "sponge"; url = "https://repo.spongepowered.org/maven" }
+}
+
+// Separate config so only mixin gets embedded, not all of Minecraft
+configurations {
+    embed
+    compile.extendsFrom(embed)
+}
+
+mixin {
+    add sourceSets.main, 'mixins.capeproviderx.refmap.json'
+    disableRefMapWarning = true
+}
+
+dependencies {
+    embed('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
+        transitive = false
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version': project.version, 'mcversion': project.minecraft.version
+    }
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+jar {
+    // Embed the mixin library classes directly into our JAR
+    from {
+        configurations.embed.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    manifest {
+        attributes(
+            'FMLCorePlugin': 'net.litetex.capes.init.MixinCoreMod',
+            'FMLCorePluginContainsFMLMod': 'true',
+            'MixinConfigs': 'mixins.capeproviderx.json',
+            'ForceLoadAsMod': 'true',
+            'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+            'TweakOrder': '0'
+        )
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+    options.compilerArgs << "-source" << "1.8" << "-target" << "1.8"
+}

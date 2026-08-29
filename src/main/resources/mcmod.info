@@ -1,0 +1,16 @@
+[
+{
+  "modid": "capeproviderx",
+  "name": "Cape Provider X",
+  "description": "Adds capes from multiple providers (PiCapes, Optifine, MinecraftCapes, SkinMC, Cosmetica). Works in offline mode too.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://github.com/picapes/cape-provider-x",
+  "updateUrl": "",
+  "authorList": ["xsyanic", "aka5h"],
+  "credits": "Original: litetex-oss/mcm-cape-provider,
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

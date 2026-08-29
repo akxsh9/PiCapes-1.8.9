@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+FMLCorePlugin: net.litetex.capes.init.MixinCoreMod
+FMLCorePluginContainsFMLMod: true
